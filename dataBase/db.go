@@ -2,6 +2,7 @@ package dataBase
 
 import (
 	"database/sql"
+	"eazyWallet/data/models"
 	"eazyWallet/logger"
 	"eazyWallet/util/config"
 	"fmt"
@@ -21,6 +22,10 @@ func DBConnection() *gorm.DB {
 	if err != nil {
 		logger.ErrorLogger(err)
 	}
+	err = db.AutoMigrate(&models.Account{}, &models.User{}, &models.Transaction{})
+	if err != nil {
+		logger.ErrorLogger(err)
+	}
 	return db
 }
 
@@ -31,7 +36,12 @@ func EnsureDataBaseCreated() error {
 		log.Println("failed to connect to database")
 		return err
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			logger.ErrorLogger(err)
+		}
+	}(db)
 	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + config.DatabaseName)
 	if err != nil {
 		log.Println("Failed to create database ")

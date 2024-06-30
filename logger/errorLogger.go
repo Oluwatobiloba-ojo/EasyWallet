@@ -3,7 +3,7 @@ package logger
 import "os"
 
 func ErrorLogger(err error) {
-	file, errs := os.OpenFile("../errors/errorLog", os.O_RDWR|os.O_APPEND, 0666)
+	file, errs := os.OpenFile("../errors/error", os.O_RDWR|os.O_APPEND, 0666)
 	if errs != nil {
 		return
 	}
