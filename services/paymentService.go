@@ -9,6 +9,7 @@ import (
 )
 
 type PaymentService interface {
+	FundWallet(req map[string]any) (*response.InitiateTransactionResponse, error)
 }
 
 type PaymentServiceImpl struct {
@@ -24,6 +25,10 @@ func (service *PaymentServiceImpl) InitiateTransaction(req *request.InitiateTran
 	}
 	if req.CurrencyChange != constant.NAIRA && req.CurrencyChange != constant.USA {
 		return nil, fmt.Errorf(errorMessage.CURRENCY_MEANS_ERROR)
+	}
+	if req.PaymentMeans == constant.Paystack {
+		paystackRequest := createPayStackRequest(req.Email, req.Amount, req.CurrencyChange)
+		return NewPaystackService().FundWallet(paystackRequest)
 	}
 	return nil, nil
 }
