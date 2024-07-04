@@ -13,6 +13,10 @@ var (
 	DatabaseHost           string
 	PaystackSecretKey      string
 	PaystackTransactionUrl string
+	MonnifyContractCode    string
+	MonnifySecretKey       string
+	MonnifyApiKey          string
+	MonnifyInitUrl         string
 )
 
 func Load(path string) {
@@ -27,6 +31,7 @@ func Load(path string) {
 func mapConfigurations() {
 	mapDataBaseConfiguration()
 	mapPaystackConfiguration()
+	mapMonnifyCofiguration()
 }
 
 func mapDataBaseConfiguration() {
@@ -39,4 +44,11 @@ func mapDataBaseConfiguration() {
 func mapPaystackConfiguration() {
 	PaystackSecretKey = os.Getenv("PAYSTACK_SECRET_KEY")
 	PaystackTransactionUrl = os.Getenv("PAYSTACK_INITIALIZE_TRANSACTION_URL")
+}
+
+func mapMonnifyCofiguration() {
+	MonnifyContractCode = os.Getenv("MONIFY_CONTRACT_CODE")
+	MonnifySecretKey = os.Getenv("MONNIFY_SECRET_KEY")
+	MonnifyApiKey = os.Getenv("MONNIFY_API_KEY")
+	MonnifyInitUrl = os.Getenv("MONNIFY_INIT_URL")
 }

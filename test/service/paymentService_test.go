@@ -47,3 +47,19 @@ func TestThatPaymentTransactionReturnAnObjectAfterSuccessfullyInitiateTransactio
 	}
 	log.Println(transaction)
 }
+
+func TestThatPaymentTransactionOfMonnifyServiceReturnAnObjectAfterSuccessfullyInitiateTransaction(t *testing.T) {
+	config.Load("../../.env")
+	var req *request.InitiateTransactionRequest
+	paymentServiceImpl := services.NewPaymentServiceImpl()
+	req = request.NewInitiateTransactionRequest("olawale@gmail.com", 1000, "MONNIFY", "NGN")
+	transaction, err := paymentServiceImpl.InitiateTransaction(req)
+	if err != nil {
+		t.Errorf("Actual %v\n Expected %v\n", nil, err)
+	}
+	actual := response.InitiateTransactionResponse{}
+	if transaction == nil {
+		t.Errorf("Actual %v\n Expected %v\n", actual, transaction)
+	}
+	log.Println(transaction)
+}

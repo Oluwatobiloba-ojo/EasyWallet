@@ -1,13 +1,10 @@
 package response
 
 type InitiateTransactionResponse struct {
-	Status  bool   `json:"status"`
-	Message string `json:"message"`
-	Data    Data   `json:"data"`
+	Url      string `json:"url"`
+	Refrence string `json:"refrence"`
 }
 
-type Data struct {
-	Authorization_Url string `json:"authorization_url"`
-	Access_Code       string `json:"access_code"`
-	Refrence          string `json:"reference"`
+func NewInitiateTransactionResponse(url string, refrence string) *InitiateTransactionResponse {
+	return &InitiateTransactionResponse{Url: url, Refrence: refrence}
 }

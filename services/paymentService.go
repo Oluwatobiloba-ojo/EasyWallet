@@ -29,6 +29,9 @@ func (service *PaymentServiceImpl) InitiateTransaction(req *request.InitiateTran
 	if req.PaymentMeans == constant.Paystack {
 		paystackRequest := createPayStackRequest(req.Email, req.Amount, req.CurrencyChange)
 		return NewPaystackService().FundWallet(paystackRequest)
+	} else if req.PaymentMeans == constant.MONNIFY {
+		monifyRequest := NewMonifyService().createMonnifyRequest(req.Email, req.Amount, req.CurrencyChange)
+		return NewMonifyService().FundWallet(monifyRequest)
 	}
 	return nil, nil
 }
