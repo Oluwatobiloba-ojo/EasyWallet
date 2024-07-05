@@ -14,7 +14,7 @@ func NewMonifyService() *MonifyService {
 	return &MonifyService{}
 }
 
-func (service MonifyService) FundWallet(req map[string]any) (*response.InitiateTransactionResponse, error) {
+func (service *MonifyService) FundWallet(req map[string]any) (*response.InitiateTransactionResponse, error) {
 	var responses response.MonnifyTransactionResponse
 	jsonData, err := json.Marshal(req)
 	if err != nil {
@@ -33,7 +33,7 @@ func mapMonnifyToRequest(newresponses *response.MonnifyTransactionResponse) (*re
 	return response.NewInitiateTransactionResponse(newresponses.ResponseBody.PaymentReference, newresponses.ResponseBody.CheckoutUrl), nil
 }
 
-func (service MonifyService) createMonnifyRequest(email string, amount float64, currencyChange string) map[string]any {
+func (service *MonifyService) createMonnifyRequest(email string, amount float64, currencyChange string) map[string]any {
 	return map[string]any{
 		"amount":             amount,
 		"customerName":       email,

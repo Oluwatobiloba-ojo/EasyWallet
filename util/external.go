@@ -3,7 +3,7 @@ package util
 import (
 	"bytes"
 	"eazyWallet/util/constant"
-	"eazyWallet/util/errorMessage"
+	"eazyWallet/util/message"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -25,7 +25,7 @@ func MakePostRequest[T any](key string, jsonData []byte, response T, url string)
 	} else if res.StatusCode == http.StatusOK {
 		return extractResponse[T](res, response)
 	} else {
-		return nil, errorMessage.PaymentTransactionFailed()
+		return nil, message.PaymentTransactionFailed()
 	}
 }
 

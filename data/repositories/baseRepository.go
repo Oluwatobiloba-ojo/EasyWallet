@@ -12,6 +12,7 @@ type BaseRepository[T, U any] interface {
 	FindById(id *U) (*T, error)
 	FindAll() ([]*T, error)
 	GetAllBy(name string, value any) ([]*T, error)
+	GetBy(name string, value any) (*T, error)
 }
 
 var dataBaseConnection *gorm.DB
@@ -53,6 +54,17 @@ func (repository BaseRepositoryImpl[T, U]) GetAllBy(name string, value any) ([]*
 	var objects []*T
 	queryString := fmt.Sprintf("%s = ?", name)
 	err := dataBaseConnection.Where(queryString, value).Find(&objects).Error
+	if err != nil {
+		return nil, err
+	}
+	return objects, nil
+}
+
+func (repository BaseRepositoryImpl[T, U]) GetBy(name string, value any) (*T, error) {
+	dataBaseConnection = dataBase.DBConnection()
+	var objects *T
+	queryString := fmt.Sprintf("%s = ?", name)
+	err := dataBaseConnection.Where(queryString, value).First(&objects).Error
 	if err != nil {
 		return nil, err
 	}
