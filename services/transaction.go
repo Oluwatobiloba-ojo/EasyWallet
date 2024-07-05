@@ -6,10 +6,12 @@ import (
 	"eazyWallet/dto/request"
 	"eazyWallet/dto/response"
 	"eazyWallet/util/message"
+	"github.com/google/uuid"
 )
 
 type TransactionService interface {
-	CreateTransaction(request *request.CreateTransactionRequest) (*response.CreateTransactionResponse, error)
+	CreateTransaction(request *request.CreateTransactionRequest) (*models.Transaction, error)
+	GetTransactionsByAccountId(id uint64) ([]response.TransactionResponse, error)
 }
 
 type TransactionServiceImpl struct {
@@ -17,14 +19,14 @@ type TransactionServiceImpl struct {
 	walletService WalletService
 }
 
-func NewTransactionServiceImpl() TransactionService {
+func NewTransactionServiceImpl(wallet WalletService) TransactionService {
 	return &TransactionServiceImpl{
 		repository:    repositories.NewTransactionRepositoryImpl(),
-		walletService: NewWalletServiceImpl(),
+		walletService: wallet,
 	}
 }
 
-func (receiver *TransactionServiceImpl) CreateTransaction(transactionRequest *request.CreateTransactionRequest) (*response.CreateTransactionResponse, error) {
+func (receiver *TransactionServiceImpl) CreateTransaction(transactionRequest *request.CreateTransactionRequest) (*models.Transaction, error) {
 	_, err := receiver.walletService.GetWalletAccountById(transactionRequest.WalletId)
 	if err != nil {
 		return nil, message.WalletDoesNotExist()
@@ -34,14 +36,38 @@ func (receiver *TransactionServiceImpl) CreateTransaction(transactionRequest *re
 	if err != nil {
 		return nil, err
 	}
-	return mapToCreateTransactionResponse(newTransaction), nil
+	if err != nil {
+		return nil, err
+	}
+	return newTransaction, nil
 }
 
-func mapToCreateTransactionResponse(transaction *models.Transaction) *response.CreateTransactionResponse {
-	return &response.CreateTransactionResponse{
-		TransactionId: transaction.ID,
-		Message:       message.TRANSACTION_CREATED,
+func (receiver *TransactionServiceImpl) getTransactionById(id uuid.UUID) (*models.Transaction, error) {
+	transaction, err := receiver.repository.FindById(&id)
+	if err != nil {
+		return nil, err
 	}
+	return transaction, nil
+}
+
+func (receiver *TransactionServiceImpl) GetTransactionsByAccountId(id uint64) ([]response.TransactionResponse, error) {
+	transactions, err := receiver.repository.FindAllTransactionByAccountId(id)
+	if err != nil {
+		return nil, err
+	}
+	return mapToTransactionResponse(transactions), nil
+}
+
+func mapToTransactionResponse(transactions []*models.Transaction) []response.TransactionResponse {
+	var responses []response.TransactionResponse
+	for _, transaction := range transactions {
+		transaction := response.TransactionResponse{
+			Amount: transaction.Amount, AccountId: transaction.AccountId,
+			Description: transaction.Description, RecipientName: transaction.RecipientName,
+			Status: transaction.Status}
+		responses = append(responses, transaction)
+	}
+	return responses
 }
 
 func mapRequestToTransaction(transactionRequest *request.CreateTransactionRequest) *models.Transaction {

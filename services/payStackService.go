@@ -1,6 +1,7 @@
 package services
 
 import (
+	"eazyWallet/dto/request"
 	"eazyWallet/dto/response"
 	"eazyWallet/util"
 	"eazyWallet/util/config"
@@ -23,6 +24,9 @@ func (service *PaystackService) FundWallet(req map[string]any) (*response.Initia
 	}
 	key := "Bearer " + config.PaystackSecretKey
 	payStackResponse, err := util.MakePostRequest[response.PaystackTransactionResponse](key, jsonData, responses, config.PaystackTransactionUrl)
+	if err != nil {
+		return nil, err
+	}
 	return mapPaystackToResponse(payStackResponse)
 }
 
@@ -30,13 +34,14 @@ func mapPaystackToResponse(stackResponse *response.PaystackTransactionResponse) 
 	return response.NewInitiateTransactionResponse(stackResponse.Data.Authorization_Url, stackResponse.Data.Refrence), nil
 }
 
-func createPayStackRequest(email string, amount float64, change string) map[string]any {
-	if change == constant.NAIRA {
-		amount *= 100
+func createPayStackRequest(request *request.InitiateTransactionRequest) map[string]any {
+	if request.CurrencyChange == constant.NAIRA {
+		request.Amount *= 100
 	}
 	return map[string]any{
-		"email":    email,
-		"amount":   amount,
-		"currency": change,
+		"email":     request.Email,
+		"amount":    request.Amount,
+		"currency":  request.CurrencyChange,
+		"reference": request.RefrenceCode,
 	}
 }

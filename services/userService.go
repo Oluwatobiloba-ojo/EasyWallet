@@ -10,6 +10,7 @@ import (
 
 type UserService interface {
 	CreateAccount(request *request.CreateUserRequest) (*response.CreateUserResponse, error)
+	GetUserById(id uint64) (*models.User, error)
 }
 
 type UserServiceImpl struct {
@@ -17,10 +18,10 @@ type UserServiceImpl struct {
 	accountService WalletService
 }
 
-func NewUserService() UserService {
+func NewUserService(walletService WalletService) UserService {
 	return &UserServiceImpl{
 		repositories:   repositories.NewUserRepository(),
-		accountService: NewWalletServiceImpl(),
+		accountService: walletService,
 	}
 }
 
@@ -47,6 +48,14 @@ func (serviceImpl *UserServiceImpl) CreateAccount(userRequest *request.CreateUse
 		return nil, err
 	}
 	return mapCreateAccountResponse(wallet), nil
+}
+
+func (serviceImpl *UserServiceImpl) GetUserById(id uint64) (*models.User, error) {
+	user, err := serviceImpl.repositories.FindById(&id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func mapCreateAccountResponse(wallet *response.CreateWalletAccountResponse) *response.CreateUserResponse {

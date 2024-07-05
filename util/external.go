@@ -6,6 +6,7 @@ import (
 	"eazyWallet/util/message"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -25,6 +26,7 @@ func MakePostRequest[T any](key string, jsonData []byte, response T, url string)
 	} else if res.StatusCode == http.StatusOK {
 		return extractResponse[T](res, response)
 	} else {
+		log.Println(extractResponse[T](res, response))
 		return nil, message.PaymentTransactionFailed()
 	}
 }

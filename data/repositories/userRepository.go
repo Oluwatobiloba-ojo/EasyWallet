@@ -5,18 +5,18 @@ import (
 )
 
 type UserRepository interface {
-	BaseRepository[models.User, uint]
+	BaseRepository[models.User, uint64]
 	GetByPhoneNumber(number string) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
 }
 
 type UserRepositoryImpl struct {
-	*BaseRepositoryImpl[models.User, uint]
+	*BaseRepositoryImpl[models.User, uint64]
 }
 
 func NewUserRepository() UserRepository {
 	return &UserRepositoryImpl{
-		&BaseRepositoryImpl[models.User, uint]{},
+		&BaseRepositoryImpl[models.User, uint64]{},
 	}
 }
 

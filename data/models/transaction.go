@@ -12,9 +12,11 @@ type Transaction struct {
 	AccountId     uint64    `gorm:"account_id"`
 	Description   string    `gorm:"description"`
 	RecipientName string    `gorm:"recipient"`
+	Status        string    `gorm:"status"`
 }
 
 func (t *Transaction) BeforeCreate(tx *gorm.DB) (err error) {
 	t.ID = uuid.New()
+	t.Status = "PENDING"
 	return
 }

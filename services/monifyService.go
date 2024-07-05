@@ -1,6 +1,7 @@
 package services
 
 import (
+	"eazyWallet/dto/request"
 	"eazyWallet/dto/response"
 	"eazyWallet/util"
 	"eazyWallet/util/config"
@@ -30,17 +31,17 @@ func (service *MonifyService) FundWallet(req map[string]any) (*response.Initiate
 }
 
 func mapMonnifyToRequest(newresponses *response.MonnifyTransactionResponse) (*response.InitiateTransactionResponse, error) {
-	return response.NewInitiateTransactionResponse(newresponses.ResponseBody.PaymentReference, newresponses.ResponseBody.CheckoutUrl), nil
+	return response.NewInitiateTransactionResponse(newresponses.ResponseBody.CheckoutUrl, newresponses.ResponseBody.PaymentReference), nil
 }
 
-func (service *MonifyService) createMonnifyRequest(email string, amount float64, currencyChange string) map[string]any {
+func (service *MonifyService) createMonnifyRequest(request *request.InitiateTransactionRequest) map[string]any {
 	return map[string]any{
-		"amount":             amount,
-		"customerName":       email,
-		"customerEmail":      email,
-		"paymentReference":   util.GenerateRefrenceCode(),
+		"amount":             request.Amount,
+		"customerName":       request.Email,
+		"customerEmail":      request.Email,
+		"paymentReference":   request.RefrenceCode,
 		"paymentDescription": "CREDIT",
-		"currencyCode":       currencyChange,
+		"currencyCode":       request.CurrencyChange,
 		"contractCode":       config.MonnifyContractCode,
 	}
 }

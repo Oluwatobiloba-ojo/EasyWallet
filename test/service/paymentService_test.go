@@ -6,6 +6,7 @@ import (
 	"eazyWallet/services"
 	"eazyWallet/util/config"
 	"fmt"
+	"github.com/google/uuid"
 	"log"
 	"testing"
 )
@@ -13,7 +14,7 @@ import (
 func TestThatPaymentTransactionWithOutTheCorrectPaymentMeansReturnError(t *testing.T) {
 	var req *request.InitiateTransactionRequest
 	paymentServiceImpl := services.NewPaymentServiceImpl()
-	req = request.NewInitiateTransactionRequest("olawale@gmail.com", 1000, "WrongPaymentMeans", "NGN")
+	req = request.NewInitiateTransactionRequest("olawale@gmail.com", 1000, "WrongPaymentMeans", "NGN", uuid.New())
 	_, err := paymentServiceImpl.InitiateTransaction(req)
 	mockerror := fmt.Errorf("Invalid payment means provided")
 	if err == nil {
@@ -24,7 +25,7 @@ func TestThatPaymentTransactionWithOutTheCorrectPaymentMeansReturnError(t *testi
 func TestThatPaymentTransactionFailsWhenTheCurrencyChangeIsWrong(t *testing.T) {
 	var req *request.InitiateTransactionRequest
 	paymentServiceImpl := services.NewPaymentServiceImpl()
-	req = request.NewInitiateTransactionRequest("olawale@gmail.com", 1000, "PAYSTACK", "WrongCurrencyChange")
+	req = request.NewInitiateTransactionRequest("olawale@gmail.com", 1000, "PAYSTACK", "WrongCurrencyChange", uuid.New())
 	_, err := paymentServiceImpl.InitiateTransaction(req)
 	mockerror := fmt.Errorf("Invalid currency change")
 	if err == nil {
@@ -36,7 +37,7 @@ func TestThatPaymentTransactionReturnAnObjectAfterSuccessfullyInitiateTransactio
 	config.Load("../../.env")
 	var req *request.InitiateTransactionRequest
 	paymentServiceImpl := services.NewPaymentServiceImpl()
-	req = request.NewInitiateTransactionRequest("olawale@gmail.com", 1000, "PAYSTACK", "NGN")
+	req = request.NewInitiateTransactionRequest("olawale@gmail.com", 1000, "PAYSTACK", "NGN", uuid.New())
 	transaction, err := paymentServiceImpl.InitiateTransaction(req)
 	if err != nil {
 		t.Errorf("Actual %v\n Expected %v\n", nil, err)
@@ -52,7 +53,7 @@ func TestThatPaymentTransactionOfMonnifyServiceReturnAnObjectAfterSuccessfullyIn
 	config.Load("../../.env")
 	var req *request.InitiateTransactionRequest
 	paymentServiceImpl := services.NewPaymentServiceImpl()
-	req = request.NewInitiateTransactionRequest("olawale@gmail.com", 1000, "MONNIFY", "NGN")
+	req = request.NewInitiateTransactionRequest("ojot630@gmail.com", 1000, "MONNIFY", "NGN", uuid.New())
 	transaction, err := paymentServiceImpl.InitiateTransaction(req)
 	if err != nil {
 		t.Errorf("Actual %v\n Expected %v\n", nil, err)

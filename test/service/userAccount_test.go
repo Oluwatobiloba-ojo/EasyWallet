@@ -11,9 +11,11 @@ import (
 )
 
 func TestThatUserCanNotCreateAnAccountWithAnInvalidPhoneNumber(t *testing.T) {
+	config.Load("../../.env")
+	walletService := services.NewWalletServiceImpl()
 	var user request.CreateUserRequest
 	var user_service services.UserService
-	user_service = services.NewUserService()
+	user_service = services.NewUserService(walletService)
 	user = *request.NewCreateUserRequest("firstName", "password", "08129810794", "lastName", "ojot630@gmail.com")
 	_, err := user_service.CreateAccount(&user)
 	if err != nil {
@@ -23,9 +25,10 @@ func TestThatUserCanNotCreateAnAccountWithAnInvalidPhoneNumber(t *testing.T) {
 
 func TestThatUserCanCreateAnAccountWithAnValidPhoneNumber(t *testing.T) {
 	config.Load("../../.env")
+	walletService := services.NewWalletServiceImpl()
 	var user request.CreateUserRequest
 	var user_service services.UserService
-	user_service = services.NewUserService()
+	user_service = services.NewUserService(walletService)
 	user = *request.NewCreateUserRequest("firstName", "password", "08129810794", "lastName", "ojot630@gmail.com")
 	response, _ := user_service.CreateAccount(&user)
 	var mock_response response2.CreateUserResponse
@@ -36,9 +39,10 @@ func TestThatUserCanCreateAnAccountWithAnValidPhoneNumber(t *testing.T) {
 
 func TestThatUserCanNotCreateAnAccountWhichAlreadyExist(t *testing.T) {
 	config.Load("../../.env")
+	walletService := services.NewWalletServiceImpl()
 	var user request.CreateUserRequest
 	var user_service services.UserService
-	user_service = services.NewUserService()
+	user_service = services.NewUserService(walletService)
 	user = *request.NewCreateUserRequest("firstName", "password", "08129810594", "lastName", "ojot630@gmail.com")
 	response, _ := user_service.CreateAccount(&user)
 	var mock_response response2.CreateUserResponse
