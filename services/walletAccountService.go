@@ -10,7 +10,7 @@ import (
 )
 
 type WalletService interface {
-	CreateWalletAccount(request.CreateWalletAccount) (*response.CreateWalletAccountResponse, error)
+	CreateWalletAccount(*request.CreateWalletAccount) (*response.CreateWalletAccountResponse, error)
 	GetWalletAccountById(id uint64) (*models.Account, error)
 	PerformTransaction(req *request.PerformTransactionRequest) (*response.PerformTransactionResponse, error)
 	GetTransactionBelongingTo(accountNumber string) ([]response.TransactionResponse, error)
@@ -33,7 +33,7 @@ func NewWalletServiceImpl() WalletService {
 	return walletService
 }
 
-func (receiver *WalletServiceImpl) CreateWalletAccount(account request.CreateWalletAccount) (*response.CreateWalletAccountResponse, error) {
+func (receiver *WalletServiceImpl) CreateWalletAccount(account *request.CreateWalletAccount) (*response.CreateWalletAccountResponse, error) {
 	var wallet *models.Account
 	wallet = MapRequestToWallet(account)
 	wallet, err := receiver.repository.Save(wallet)
@@ -110,7 +110,7 @@ func MapCreateWalletResponse(wallet *models.Account) *response.CreateWalletAccou
 	}
 }
 
-func MapRequestToWallet(account request.CreateWalletAccount) *models.Account {
+func MapRequestToWallet(account *request.CreateWalletAccount) *models.Account {
 	return &models.Account{
 		AccountNumber: account.AccountNumber,
 		Password:      account.Password,
@@ -118,8 +118,8 @@ func MapRequestToWallet(account request.CreateWalletAccount) *models.Account {
 	}
 }
 
-func MapWalletAccountRequest(user *models.User, accountNumber string, password string) request.CreateWalletAccount {
-	return request.CreateWalletAccount{
+func MapWalletAccountRequest(user *models.User, accountNumber string, password string) *request.CreateWalletAccount {
+	return &request.CreateWalletAccount{
 		AccountNumber: accountNumber,
 		UserId:        user.ID,
 		Password:      password,
