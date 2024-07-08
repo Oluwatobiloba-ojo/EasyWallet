@@ -1,6 +1,7 @@
 package models
 
 import (
+	"eazyWallet/util/constant"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -17,6 +18,6 @@ type Transaction struct {
 
 func (t *Transaction) BeforeCreate(tx *gorm.DB) (err error) {
 	t.ID = uuid.New()
-	t.Status = "PENDING"
+	t.Status = constant.PENDING
 	return
 }

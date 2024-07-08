@@ -7,11 +7,13 @@ import (
 	"eazyWallet/dto/response"
 	"eazyWallet/util/message"
 	"github.com/google/uuid"
+	"log"
 )
 
 type TransactionService interface {
 	CreateTransaction(request *request.CreateTransactionRequest) (*models.Transaction, error)
 	GetTransactionsByAccountId(id uint64) ([]response.TransactionResponse, error)
+	UpdateTransaction(id string, status string) (*models.Transaction, error)
 }
 
 type TransactionServiceImpl struct {
@@ -24,6 +26,24 @@ func NewTransactionServiceImpl(wallet WalletService) TransactionService {
 		repository:    repositories.NewTransactionRepositoryImpl(),
 		walletService: wallet,
 	}
+}
+
+func (t *TransactionServiceImpl) UpdateTransaction(id string, status string) (*models.Transaction, error) {
+	transactionId, err := uuid.Parse(id)
+	if err != nil {
+		return nil, err
+	}
+	transaction, err := t.getTransactionById(transactionId)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Update ", transaction)
+	transaction.Status = status
+	transaction, err = t.repository.Save(transaction)
+	if err != nil {
+		return nil, err
+	}
+	return transaction, nil
 }
 
 func (receiver *TransactionServiceImpl) CreateTransaction(transactionRequest *request.CreateTransactionRequest) (*models.Transaction, error) {

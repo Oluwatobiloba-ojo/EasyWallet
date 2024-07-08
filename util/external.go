@@ -24,14 +24,14 @@ func MakePostRequest[T any](key string, jsonData []byte, response T, url string)
 	if err != nil {
 		return nil, err
 	} else if res.StatusCode == http.StatusOK {
-		return extractResponse[T](res, response)
+		return ExtractResponse[T](res, response)
 	} else {
-		log.Println(extractResponse[T](res, response))
+		log.Println(ExtractResponse[T](res, response))
 		return nil, message.PaymentTransactionFailed()
 	}
 }
 
-func extractResponse[T any](res *http.Response, response T) (*T, error) {
+func ExtractResponse[T any](res *http.Response, response T) (*T, error) {
 	readAll, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err

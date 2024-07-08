@@ -5,8 +5,12 @@ import (
 	"eazyWallet/data/repositories"
 	"eazyWallet/dto/request"
 	"eazyWallet/dto/response"
+	"eazyWallet/logger"
+	"eazyWallet/util/constant"
 	"eazyWallet/util/message"
+	"fmt"
 	"github.com/google/uuid"
+	"log"
 )
 
 type WalletService interface {
@@ -14,6 +18,7 @@ type WalletService interface {
 	GetWalletAccountById(id uint64) (*models.Account, error)
 	PerformTransaction(req *request.PerformTransactionRequest) (*response.PerformTransactionResponse, error)
 	GetTransactionBelongingTo(accountNumber string) ([]response.TransactionResponse, error)
+	FundWallet(transactionId string, status string)
 }
 
 type WalletServiceImpl struct {
@@ -73,6 +78,33 @@ func (receiver *WalletServiceImpl) PerformTransaction(transactionRequest *reques
 		Url:     initiateTransaction.Url,
 		Message: message.PERFORM_TRANSACTION}
 	return res, nil
+}
+
+func (receiver *WalletServiceImpl) FundWallet(transactionId string, status string) {
+	fmt.Println("It came into fund wallet ", status, "Transaction ", transactionId)
+	if status == "charge.success" || status == "SUCCESSFUL_TRANSACTION" {
+		transaction, err := receiver.transactionService.UpdateTransaction(transactionId, constant.SUCCESS)
+		if err != nil {
+			logger.ErrorLogger(err)
+		}
+		log.Println("Transaction ", transaction)
+		wallet, err := receiver.GetWalletAccountById(transaction.AccountId)
+		if err != nil {
+			logger.ErrorLogger(err)
+		}
+		log.Println("Wallet ", wallet)
+		wallet.AccountBalance += transaction.Amount
+		wallet, err = receiver.repository.Save(wallet)
+		if err != nil {
+			logger.ErrorLogger(err)
+		}
+		return
+	}
+	transaction, err := receiver.transactionService.UpdateTransaction(transactionId, constant.FAILED)
+	if err != nil {
+		logger.ErrorLogger(err)
+	}
+	log.Println(transaction)
 }
 
 func mapToInitiateTransaction(transactionRequest *request.PerformTransactionRequest, refrenceCode uuid.UUID, email string) *request.InitiateTransactionRequest {

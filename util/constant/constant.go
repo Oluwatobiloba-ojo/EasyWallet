@@ -8,4 +8,7 @@ var (
 	ContentType      = "Content-Type"
 	Authorization    = "Authorization"
 	APPLICATION_JSON = "application/json"
+	PENDING          = "PENDING"
+	SUCCESS          = "SUCCESSFUL"
+	FAILED           = "FAIL"
 )

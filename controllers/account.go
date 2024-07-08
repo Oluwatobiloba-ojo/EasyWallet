@@ -3,8 +3,10 @@ package controllers
 import (
 	"eazyWallet/dto/request"
 	"eazyWallet/dto/response"
+	"eazyWallet/logger"
 	"eazyWallet/services"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -29,4 +31,30 @@ func (c *AccountController) PerformTransaction(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, response.NewApiResponse[*response.PerformTransactionResponse](res, true))
+}
+
+func (c *AccountController) WebHookPaystackEndPoint(context *gin.Context) {
+	req := &response.PaystackWebhookResponse{}
+	err := context.ShouldBindJSON(req)
+	if err != nil {
+		return
+	}
+	log.Println(req)
+	go func() {
+		c.walletService.FundWallet(req.Data.Reference, req.Event)
+	}()
+	context.JSON(http.StatusOK, response.NewApiResponse[string]("update successfully", true))
+}
+
+func (c *AccountController) WebHookMonnifyEndPoint(ctx *gin.Context) {
+	req := &response.MonnifyWebhookResponse{}
+	err := ctx.ShouldBindJSON(req)
+	if err != nil {
+		logger.ErrorLogger(err)
+		return
+	}
+	go func() {
+		c.walletService.FundWallet(req.EventData.Reference, req.Event)
+	}()
+	ctx.JSON(http.StatusOK, response.NewApiResponse[string]("successfully", true))
 }
