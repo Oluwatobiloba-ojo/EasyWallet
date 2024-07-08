@@ -82,7 +82,7 @@ func (receiver *WalletServiceImpl) PerformTransaction(transactionRequest *reques
 
 func (receiver *WalletServiceImpl) FundWallet(transactionId string, status string) {
 	fmt.Println("It came into fund wallet ", status, "Transaction ", transactionId)
-	if status == "charge.success" || status == "SUCCESSFUL_TRANSACTION" {
+	if status == constant.PAYSTACK_SUCCESS || status == constant.MONNIFY_SUCCESS {
 		transaction, err := receiver.transactionService.UpdateTransaction(transactionId, constant.SUCCESS)
 		if err != nil {
 			logger.ErrorLogger(err)

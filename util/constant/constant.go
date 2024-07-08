@@ -11,4 +11,6 @@ var (
 	PENDING          = "PENDING"
 	SUCCESS          = "SUCCESSFUL"
 	FAILED           = "FAIL"
+	PAYSTACK_SUCCESS = "charge.success"
+	MONNIFY_SUCCESS  = "SUCCESSFUL_TRANSACTION"
 )
