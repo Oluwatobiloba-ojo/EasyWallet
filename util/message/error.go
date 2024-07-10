@@ -9,6 +9,7 @@ var (
 	INVALID_REQUEST            = "Invalid request body"
 	USER_ALREADY_EXIST         = "User already exist"
 	WALLET_DOESNT_EXIST        = "Wallet does not exist"
+	AUTHORIZATION_WRONG        = "Authorization went wrong, credential invalid"
 )
 
 func PaymentTransactionFailed() error {

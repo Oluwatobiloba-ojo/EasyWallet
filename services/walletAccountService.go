@@ -17,7 +17,7 @@ type WalletService interface {
 	CreateWalletAccount(*request.CreateWalletAccount) (*response.CreateWalletAccountResponse, error)
 	GetWalletAccountById(id uint64) (*models.Account, error)
 	PerformTransaction(req *request.PerformTransactionRequest) (*response.PerformTransactionResponse, error)
-	GetTransactionBelongingTo(accountNumber string) ([]response.TransactionResponse, error)
+	GetTransactionBelongingTo(accountNumber string, pin string) ([]response.TransactionResponse, error)
 	FundWallet(transactionId string, status string)
 }
 
@@ -115,10 +115,13 @@ func mapToCreateTransactionRequest(transactionRequest *request.PerformTransactio
 	return request.NewCreateTransactionRequest(transactionRequest.Amount, walletId, transactionRequest.Description, transactionRequest.Recipient_Name)
 }
 
-func (receiver *WalletServiceImpl) GetTransactionBelongingTo(accountNumber string) ([]response.TransactionResponse, error) {
+func (receiver *WalletServiceImpl) GetTransactionBelongingTo(accountNumber string, pin string) ([]response.TransactionResponse, error) {
 	wallet, err := receiver.getWalletAccountByAccountNumber(accountNumber)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(message.AUTHORIZATION_WRONG)
+	}
+	if wallet.Password != pin {
+		return nil, fmt.Errorf(message.AUTHORIZATION_WRONG)
 	}
 	transactions, err := receiver.transactionService.GetTransactionsByAccountId(wallet.ID)
 	if err != nil {

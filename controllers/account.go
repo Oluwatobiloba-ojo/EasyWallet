@@ -58,3 +58,18 @@ func (c *AccountController) WebHookMonnifyEndPoint(ctx *gin.Context) {
 	}()
 	ctx.JSON(http.StatusOK, response.NewApiResponse[string]("successfully", true))
 }
+
+func (c *AccountController) GetAllTransaction(ctx *gin.Context) {
+	accountNumber := ctx.Query("accountNumber")
+	pin := ctx.Query("pin")
+	if accountNumber == "" || pin == "" {
+		ctx.JSON(http.StatusBadRequest, response.NewApiResponse[string]("Details are not complete", false))
+		return
+	}
+	transactions, err := c.walletService.GetTransactionBelongingTo(accountNumber, pin)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, response.NewApiResponse[string](err.Error(), false))
+		return
+	}
+	ctx.JSON(http.StatusOK, response.NewApiResponse(transactions, true))
+}
